@@ -1,4 +1,5 @@
 <app-header></app-header>
 <main>
-  <app-post-create></app-post-create>
+  <app-post-create (postCreadted)='onPostAdded($event)'></app-post-create>
+  <app-post-list [posts]="storedPost"></app-post-list>
 </main>
