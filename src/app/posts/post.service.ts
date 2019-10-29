@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Subject } from 'rxjs';
 
+//AYEPP4kg4f15pt1c
 
 @Injectable({providedIn: 'root'})
 export class PostService {
@@ -25,8 +26,11 @@ export class PostService {
 
   addPost(title: string, content: string) {
     const post: Post = {id: null, title, content};
-    this.posts.push(post);
-
-    this.postsUpdated.next([...this.posts]);
+    this.http.post<{message: string}>('http://localhost:3000/api/posts', post)
+      .subscribe((responseData) => {
+        console.log(responseData.message);
+        this.posts.push(post);
+        this.postsUpdated.next([...this.posts]);
+      });
   }
 }
