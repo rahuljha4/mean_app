@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Message } from '@angular/compiler/src/i18n/i18n_ast';
 
 @Injectable({providedIn: 'root'})
 export class PostService {
@@ -32,6 +33,13 @@ export class PostService {
     });
   }
 
+  getPost(id: string) {
+    // return {...this.posts.find(p => p.id === id)};
+    return this.http.get<{_id: string, title: string, content: string}>(
+      'http://localhost:3000/api/posts/' + id
+    );
+  }
+
   getPostsUpdateListner() {
      return this.postsUpdated.asObservable();
   }
@@ -44,6 +52,18 @@ export class PostService {
         const newPostId = responseData.postId;
         post.id = newPostId;
         this.posts.push(post);
+        this.postsUpdated.next([...this.posts]);
+      });
+  }
+
+  updatePost(id: string, title: string, content: string) {
+    const post: Post = {id, title, content};
+    this.http.put('http://localhost:3000/api/posts/' + id, post)
+      .subscribe(response => {
+        const updatedPosts = [...this.posts];
+        const oldPostIndex = updatedPosts.findIndex(p => p.id === post.id);
+        updatedPosts[oldPostIndex] = post;
+        this.posts = updatedPosts;
         this.postsUpdated.next([...this.posts]);
       });
   }
